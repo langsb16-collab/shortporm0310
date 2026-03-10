@@ -35,6 +35,7 @@ export default function VideoGenerator({ lang }: { lang: Language }) {
   const [selectedScript, setSelectedScript] = useState<Script | null>(null);
   const [thumbnail, setThumbnail] = useState<string | null>(null);
   const [step, setStep] = useState(1); // 1: Input, 2: Scripts, 3: Preview
+  const [error, setError] = useState<string | null>(null);
 
   const t = translations[lang].generator;
   const tc = translations[lang].common;
@@ -42,12 +43,14 @@ export default function VideoGenerator({ lang }: { lang: Language }) {
   const handleGenerate = async () => {
     if (!keyword) return;
     setIsGenerating(true);
+    setError(null);
     try {
       const result = await generateShortsScripts(keyword, category, lang);
       setScripts(result);
       setStep(2);
     } catch (error) {
       console.error(error);
+      setError(error instanceof Error ? error.message : 'An error occurred. Please try again.');
     } finally {
       setIsGenerating(false);
     }
@@ -161,6 +164,28 @@ export default function VideoGenerator({ lang }: { lang: Language }) {
                 </>
               )}
             </button>
+
+            {/* Error Message */}
+            {error && (
+              <motion.div
+                initial={{ opacity: 0, y: -10 }}
+                animate={{ opacity: 1, y: 0 }}
+                className="bg-red-50 border-2 border-red-200 rounded-2xl p-4 flex items-start gap-3"
+              >
+                <div className="w-6 h-6 bg-red-500 rounded-full flex items-center justify-center text-white text-xs font-bold flex-shrink-0">
+                  !
+                </div>
+                <div className="flex-1">
+                  <p className="text-sm font-bold text-red-800 mb-1">오류가 발생했습니다</p>
+                  <p className="text-xs text-red-600">{error}</p>
+                  {error.includes('API key') && (
+                    <p className="text-xs text-red-600 mt-2">
+                      .env.local 파일에 VITE_GEMINI_API_KEY를 설정해주세요.
+                    </p>
+                  )}
+                </div>
+              </motion.div>
+            )}
           </div>
         </motion.div>
       )}

@@ -1,35 +1,45 @@
 
 import { GoogleGenAI, Type, ThinkingLevel } from "@google/genai";
 
-const apiKey = process.env.GEMINI_API_KEY || "";
+// Vite uses import.meta.env instead of process.env
+const apiKey = import.meta.env.VITE_GEMINI_API_KEY || "";
 const ai = new GoogleGenAI({ apiKey });
 
 export async function generateShortsScripts(keyword: string, category: string, lang: string) {
-  const response = await ai.models.generateContent({
-    model: "gemini-3-flash-preview",
-    contents: `Generate 3 viral short video scripts for "${keyword}" (${category}) in ${lang}. 
-    Return JSON array: [{"title", "hook", "body", "cta", "hashtags"}]`,
-    config: {
-      thinkingConfig: { thinkingLevel: ThinkingLevel.LOW },
-      responseMimeType: "application/json",
-      responseSchema: {
-        type: Type.ARRAY,
-        items: {
-          type: Type.OBJECT,
-          properties: {
-            title: { type: Type.STRING },
-            hook: { type: Type.STRING },
-            body: { type: Type.STRING },
-            cta: { type: Type.STRING },
-            hashtags: { type: Type.ARRAY, items: { type: Type.STRING } },
+  if (!apiKey) {
+    throw new Error("GEMINI_API_KEY is not configured. Please set VITE_GEMINI_API_KEY in .env.local");
+  }
+
+  try {
+    const response = await ai.models.generateContent({
+      model: "gemini-3-flash-preview",
+      contents: `Generate 3 viral short video scripts for "${keyword}" (${category}) in ${lang}. 
+      Return JSON array: [{"title", "hook", "body", "cta", "hashtags"}]`,
+      config: {
+        thinkingConfig: { thinkingLevel: ThinkingLevel.LOW },
+        responseMimeType: "application/json",
+        responseSchema: {
+          type: Type.ARRAY,
+          items: {
+            type: Type.OBJECT,
+            properties: {
+              title: { type: Type.STRING },
+              hook: { type: Type.STRING },
+              body: { type: Type.STRING },
+              cta: { type: Type.STRING },
+              hashtags: { type: Type.ARRAY, items: { type: Type.STRING } },
+            },
+            required: ["title", "hook", "body", "cta", "hashtags"],
           },
-          required: ["title", "hook", "body", "cta", "hashtags"],
         },
       },
-    },
-  });
+    });
 
-  return JSON.parse(response.text);
+    return JSON.parse(response.text);
+  } catch (error) {
+    console.error("Error generating scripts:", error);
+    throw new Error("Failed to generate scripts. Please check your API key and try again.");
+  }
 }
 
 export async function generateThumbnailPrompt(scriptTitle: string) {
