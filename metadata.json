@@ -1,0 +1,8 @@
+{
+  "name": "AI 숏폼 100개 공장 0310",
+  "description": "Automated AI video production platform for YouTube Shorts, TikTok, and Reels with multi-language support and AI-powered chat.",
+  "requestFramePermissions": [
+    "camera",
+    "microphone"
+  ]
+}

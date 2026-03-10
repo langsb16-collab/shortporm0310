@@ -1,0 +1,30 @@
+@import "tailwindcss";
+
+@theme {
+  --font-sans: "Inter", "Pretendard", ui-sans-serif, system-ui, sans-serif;
+  --color-primary: #1428A0;
+  --color-primary-hover: #1F3BB3;
+  --color-accent: #FF7A00;
+  --color-bg-soft: #F5F7FA;
+}
+
+@layer base {
+  body {
+    @apply bg-bg-soft text-[#111111] font-sans;
+  }
+}
+
+.glass-morphism {
+  background: rgba(255, 255, 255, 0.7);
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.scrollbar-hide::-webkit-scrollbar {
+  display: none;
+}
+
+.scrollbar-hide {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
