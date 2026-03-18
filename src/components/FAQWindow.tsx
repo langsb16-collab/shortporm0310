@@ -50,27 +50,27 @@ export default function FAQWindow({ lang }: { lang: Language }) {
             initial={{ opacity: 0, scale: 0.9, y: 20 }}
             animate={{ opacity: 1, scale: 1, y: 0 }}
             exit={{ opacity: 0, scale: 0.9, y: 20 }}
-            className="mb-4 w-80 sm:w-96 max-h-[500px] bg-white rounded-2xl shadow-2xl overflow-hidden border border-gray-100 flex flex-col"
+            className="mb-4 w-80 sm:w-96 max-h-[500px] bg-card rounded-2xl shadow-2xl overflow-hidden border border-border flex flex-col"
           >
-            <div className="bg-accent p-4 text-white flex items-center justify-between">
+            <div className="bg-accent p-4 text-white flex items-center justify-between glow-accent">
               <div className="flex items-center gap-2">
                 <Bot size={20} />
-                <h3 className="font-bold text-sm">{t.title}</h3>
+                <h3 className="font-bold text-sm uppercase tracking-widest">{t.title}</h3>
               </div>
               <button onClick={() => setIsOpen(false)} className="p-1 hover:bg-white/10 rounded-lg">
                 <X size={20} />
               </button>
             </div>
             
-            <div className="flex-1 overflow-y-auto p-4 space-y-2 scrollbar-hide">
+            <div className="flex-1 overflow-y-auto p-4 space-y-2 scrollbar-hide bg-dark-bg/50">
               {faqList.map((item, i) => (
-                <div key={i} className="border border-gray-100 rounded-xl overflow-hidden">
+                <div key={i} className="border border-border rounded-xl overflow-hidden bg-white/5">
                   <button
                     onClick={() => setExpandedIndex(expandedIndex === i ? null : i)}
-                    className="w-full p-3 text-left flex items-center justify-between hover:bg-gray-50 transition-colors"
+                    className="w-full p-3 text-left flex items-center justify-between hover:bg-white/5 transition-colors"
                   >
-                    <span className="text-xs font-medium text-gray-700">{item.q}</span>
-                    {expandedIndex === i ? <ChevronUp size={14} /> : <ChevronDown size={14} />}
+                    <span className="text-xs font-medium text-text-primary">{item.q}</span>
+                    {expandedIndex === i ? <ChevronUp size={14} className="text-text-secondary" /> : <ChevronDown size={14} className="text-text-secondary" />}
                   </button>
                   <AnimatePresence>
                     {expandedIndex === i && (
@@ -80,7 +80,7 @@ export default function FAQWindow({ lang }: { lang: Language }) {
                         exit={{ height: 0, opacity: 0 }}
                         className="px-3 pb-3"
                       >
-                        <p className="text-[11px] text-gray-500 leading-relaxed">
+                        <p className="text-[11px] text-text-secondary leading-relaxed">
                           {item.a}
                         </p>
                       </motion.div>
@@ -90,8 +90,8 @@ export default function FAQWindow({ lang }: { lang: Language }) {
               ))}
             </div>
             
-            <div className="p-3 bg-gray-50 text-center border-t border-gray-100">
-              <p className="text-[10px] text-gray-400">{t.poweredBy}</p>
+            <div className="p-3 bg-card text-center border-t border-border">
+              <p className="text-[10px] text-text-secondary uppercase tracking-widest">{t.poweredBy}</p>
             </div>
           </motion.div>
         )}
@@ -101,7 +101,7 @@ export default function FAQWindow({ lang }: { lang: Language }) {
         whileHover={{ scale: 1.05 }}
         whileTap={{ scale: 0.95 }}
         onClick={() => setIsOpen(!isOpen)}
-        className="w-14 h-14 bg-accent text-white rounded-2xl shadow-lg flex items-center justify-center hover:opacity-90 transition-all"
+        className="w-14 h-14 bg-accent text-white rounded-2xl shadow-lg flex items-center justify-center hover:opacity-90 transition-all glow-accent"
       >
         {isOpen ? <X size={24} /> : <Bot size={24} />}
       </motion.button>

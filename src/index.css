@@ -2,29 +2,56 @@
 
 @theme {
   --font-sans: "Inter", "Pretendard", ui-sans-serif, system-ui, sans-serif;
+  --font-mono: "JetBrains Mono", ui-monospace, SFMono-Regular, monospace;
+  
   --color-primary: #1428A0;
   --color-primary-hover: #1F3BB3;
   --color-accent: #FF7A00;
-  --color-bg-soft: #F5F7FA;
+  --color-accent-hover: #FF9533;
+  --color-dark-bg: #0B0F1A;
+  --color-card: #121826;
+  --color-border: #1E293B;
+  --color-text-primary: #F8FAFC;
+  --color-text-secondary: #94A3B8;
+  --color-bg-soft: #0B0F1A;
 }
 
 @layer base {
   body {
-    @apply bg-bg-soft text-[#111111] font-sans;
+    @apply bg-dark-bg text-text-primary antialiased font-sans;
   }
 }
 
-.glass-morphism {
-  background: rgba(255, 255, 255, 0.7);
-  backdrop-filter: blur(10px);
-  border: 1px solid rgba(255, 255, 255, 0.2);
+@layer components {
+  .glass-card {
+    @apply bg-white/5 backdrop-blur-xl border border-white/10 shadow-2xl;
+  }
+  
+  .premium-card {
+    @apply bg-card border border-border rounded-2xl shadow-[0_8px_30px_rgba(0,0,0,0.4)] transition-all duration-300;
+  }
+  
+  .btn-primary {
+    @apply bg-gradient-to-br from-primary to-primary-hover text-white font-bold rounded-xl shadow-[0_10px_30px_rgba(20,40,160,0.4)] hover:scale-[1.02] active:scale-[0.98] transition-all duration-200;
+  }
+  
+  .btn-accent {
+    @apply bg-accent text-white font-bold rounded-xl shadow-[0_10px_25px_rgba(255,122,0,0.5)] hover:bg-accent-hover hover:scale-[1.02] active:scale-[0.98] transition-all duration-200;
+  }
+
+  .scrollbar-hide::-webkit-scrollbar {
+    display: none;
+  }
+  .scrollbar-hide {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
 }
 
-.scrollbar-hide::-webkit-scrollbar {
-  display: none;
+.glow-primary {
+  box-shadow: 0 0 20px rgba(20, 40, 160, 0.6);
 }
 
-.scrollbar-hide {
-  -ms-overflow-style: none;
-  scrollbar-width: none;
+.glow-accent {
+  box-shadow: 0 0 20px rgba(255, 122, 0, 0.5);
 }

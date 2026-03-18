@@ -27,12 +27,12 @@ export default function Dashboard({ lang }: DashboardProps) {
     <div className="p-4 sm:p-8 max-w-7xl mx-auto space-y-8">
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div>
-          <h1 className="text-3xl font-black text-gray-900 uppercase tracking-tight">{t.dashboard}</h1>
-          <p className="text-gray-500 text-sm">Welcome back! Here's what's happening with your AI shorts.</p>
+          <h1 className="text-3xl font-black text-text-primary uppercase tracking-tight">{t.dashboard}</h1>
+          <p className="text-text-secondary text-sm">Welcome back! Here's what's happening with your AI shorts.</p>
         </div>
-        <div className="flex items-center gap-2 bg-white p-1 rounded-2xl shadow-sm border border-gray-100">
-          <button className="px-4 py-2 bg-primary text-white text-xs font-bold rounded-xl shadow-lg shadow-primary/20">Last 7 Days</button>
-          <button className="px-4 py-2 text-gray-500 text-xs font-bold hover:bg-gray-50 rounded-xl transition-colors">Last 30 Days</button>
+        <div className="flex items-center gap-2 bg-card p-1 rounded-2xl shadow-sm border border-border">
+          <button className="px-4 py-2 bg-primary text-white text-xs font-bold rounded-xl shadow-lg glow-primary">Last 7 Days</button>
+          <button className="px-4 py-2 text-text-secondary text-xs font-bold hover:bg-white/5 rounded-xl transition-colors">Last 30 Days</button>
         </div>
       </div>
 
@@ -44,19 +44,19 @@ export default function Dashboard({ lang }: DashboardProps) {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: i * 0.1 }}
-            className="bg-white p-6 rounded-3xl shadow-sm border border-gray-100 hover:shadow-md transition-shadow"
+            className="premium-card p-6 hover:scale-[1.02]"
           >
             <div className="flex items-center justify-between mb-4">
               <div className={`w-12 h-12 ${stat.color} rounded-2xl flex items-center justify-center text-white shadow-lg`}>
                 <stat.icon size={24} />
               </div>
-              <div className="flex items-center gap-1 text-green-500 text-xs font-bold bg-green-50 px-2 py-1 rounded-lg">
+              <div className="flex items-center gap-1 text-green-500 text-xs font-bold bg-green-500/10 px-2 py-1 rounded-lg">
                 <TrendingUp size={12} />
                 {stat.trend}
               </div>
             </div>
-            <p className="text-gray-500 text-xs font-bold uppercase tracking-widest mb-1">{stat.label}</p>
-            <p className="text-3xl font-black text-gray-900">{stat.value}</p>
+            <p className="text-text-secondary text-xs font-bold uppercase tracking-widest mb-1">{stat.label}</p>
+            <p className="text-3xl font-black text-text-primary">{stat.value}</p>
           </motion.div>
         ))}
       </div>
@@ -65,7 +65,7 @@ export default function Dashboard({ lang }: DashboardProps) {
         {/* Recent Videos */}
         <div className="lg:col-span-2 space-y-6">
           <div className="flex items-center justify-between">
-            <h2 className="text-xl font-bold text-gray-900">Recent Creations</h2>
+            <h2 className="text-xl font-bold text-text-primary uppercase tracking-widest">Recent Creations</h2>
             <button className="text-sm text-primary font-bold hover:underline">View All</button>
           </div>
           <div className="space-y-4">
@@ -73,22 +73,22 @@ export default function Dashboard({ lang }: DashboardProps) {
               <motion.div
                 key={video.id}
                 whileHover={{ x: 5 }}
-                className="bg-white p-4 rounded-3xl shadow-sm border border-gray-100 flex items-center gap-4 group cursor-pointer"
+                className="premium-card p-4 flex items-center gap-4 group cursor-pointer"
               >
                 <div className="w-24 h-16 rounded-xl overflow-hidden relative flex-shrink-0">
-                  <img src={video.thumbnail} alt={video.title} className="w-full h-full object-cover" referrerPolicy="no-referrer" />
-                  <div className="absolute inset-0 bg-black/20 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
+                  <img src={video.thumbnail} alt={video.title} className="w-full h-full object-cover opacity-60" referrerPolicy="no-referrer" />
+                  <div className="absolute inset-0 bg-black/40 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
                     <Play size={20} className="text-white fill-white" />
                   </div>
                 </div>
                 <div className="flex-1 min-w-0">
-                  <h3 className="font-bold text-gray-900 truncate">{video.title}</h3>
+                  <h3 className="font-bold text-text-primary truncate">{video.title}</h3>
                   <div className="flex items-center gap-3 mt-1">
-                    <span className="text-xs text-gray-400 flex items-center gap-1"><Eye size={12} /> {video.views}</span>
-                    <span className="text-xs text-gray-400 flex items-center gap-1"><Clock size={12} /> {video.date}</span>
+                    <span className="text-xs text-text-secondary flex items-center gap-1"><Eye size={12} /> {video.views}</span>
+                    <span className="text-xs text-text-secondary flex items-center gap-1"><Clock size={12} /> {video.date}</span>
                   </div>
                 </div>
-                <button className="p-2 text-gray-400 hover:text-primary hover:bg-primary/5 rounded-xl transition-all">
+                <button className="p-2 text-text-secondary hover:text-primary hover:bg-primary/10 rounded-xl transition-all">
                   <ArrowUpRight size={20} />
                 </button>
               </motion.div>
@@ -98,34 +98,34 @@ export default function Dashboard({ lang }: DashboardProps) {
 
         {/* Quick Tips / AI Insights */}
         <div className="space-y-6">
-          <h2 className="text-xl font-bold text-gray-900">AI Insights</h2>
-          <div className="bg-gradient-to-br from-gray-900 to-black rounded-3xl p-6 text-white shadow-xl">
-            <div className="w-10 h-10 bg-white/10 rounded-xl flex items-center justify-center mb-4">
-              <TrendingUp size={20} className="text-primary" />
+          <h2 className="text-xl font-bold text-text-primary uppercase tracking-widest">AI Insights</h2>
+          <div className="bg-gradient-to-br from-primary to-primary-hover rounded-3xl p-8 text-white shadow-2xl glow-primary">
+            <div className="w-10 h-10 bg-white/20 rounded-xl flex items-center justify-center mb-4">
+              <TrendingUp size={20} className="text-white" />
             </div>
             <h3 className="font-bold mb-2">Viral Opportunity!</h3>
-            <p className="text-sm text-gray-400 leading-relaxed mb-6">
+            <p className="text-sm text-white/80 leading-relaxed mb-6">
               "AI Finance" keywords are trending in your region. Create a 30s short about "Passive Income with AI" to boost reach by up to 40%.
             </p>
-            <button className="w-full py-3 bg-primary text-white font-bold rounded-xl text-sm shadow-lg shadow-primary/20 hover:bg-primary-hover transition-all">
+            <button className="w-full py-3 bg-white text-primary font-bold rounded-xl text-sm shadow-lg hover:bg-white/90 transition-all">
               Try This Topic
             </button>
           </div>
           
-          <div className="bg-white p-6 rounded-3xl shadow-sm border border-gray-100">
-            <h3 className="font-bold text-gray-900 mb-4">System Status</h3>
+          <div className="premium-card p-6">
+            <h3 className="font-bold text-text-primary mb-4 uppercase tracking-widest text-xs">System Status</h3>
             <div className="space-y-4">
               <div className="flex items-center justify-between text-sm">
-                <span className="text-gray-500">AI Rendering</span>
+                <span className="text-text-secondary">AI Rendering</span>
                 <span className="text-green-500 font-bold">Optimal</span>
               </div>
               <div className="flex items-center justify-between text-sm">
-                <span className="text-gray-500">B-Roll Library</span>
+                <span className="text-text-secondary">B-Roll Library</span>
                 <span className="text-green-500 font-bold">Updated</span>
               </div>
               <div className="flex items-center justify-between text-sm">
-                <span className="text-gray-500">API Latency</span>
-                <span className="text-gray-900 font-bold">12ms</span>
+                <span className="text-text-secondary">API Latency</span>
+                <span className="text-text-primary font-bold">12ms</span>
               </div>
             </div>
           </div>
