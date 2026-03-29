@@ -1,0 +1,29 @@
+{
+  "$schema": "node_modules/wrangler/config-schema.json",
+  "name": "shortporm0310",
+  "main": "worker/index.ts",
+  "compatibility_date": "2024-03-18",
+  "compatibility_flags": ["nodejs_compat"],
+  "pages_build_output_dir": "./dist",
+
+  "d1_databases": [],
+  
+  "kv_namespaces": [
+    {
+      "binding": "CACHE",
+      "id": "your-kv-namespace-id",
+      "preview_id": "your-kv-preview-id"
+    }
+  ],
+
+  "r2_buckets": [
+    {
+      "binding": "BUCKET",
+      "bucket_name": "ai-video-bucket"
+    }
+  ],
+
+  "vars": {
+    "API_URL": "https://api.aishorts.factory"
+  }
+}

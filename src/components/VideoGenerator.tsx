@@ -61,14 +61,24 @@ export default function VideoGenerator({ lang }: { lang: Language }) {
   }, [isPlaying]);
 
   const handleGenerate = async () => {
-    if (!keyword) return;
+    if (!keyword) {
+      alert(t.placeholder || "키워드를 입력해주세요");
+      return;
+    }
+    
     setIsGenerating(true);
+    console.log(`🚀 Starting generation for keyword: ${keyword}, category: ${category}`);
+    
     try {
+      // API 호출 (Worker 또는 직접 생성)
       const result = await generateShortsScripts(keyword, category, lang);
+      console.log(`✅ Generated ${result.length} scripts`);
+      
       setScripts(result);
       setStep(2);
     } catch (error) {
-      console.error(error);
+      console.error("❌ Generation failed:", error);
+      alert("스크립트 생성 실패. 다시 시도해주세요.");
     } finally {
       setIsGenerating(false);
     }
@@ -137,7 +147,8 @@ export default function VideoGenerator({ lang }: { lang: Language }) {
                 <button
                   onClick={handleGenerate}
                   disabled={isGenerating || !keyword}
-                  className="btn-primary px-8 py-5 flex items-center gap-2 text-lg"
+                  className="btn-primary px-8 py-5 flex items-center gap-2 text-lg relative z-10"
+                  aria-label="Generate AI Scripts"
                 >
                   {isGenerating ? <Loader2 className="animate-spin" /> : <Sparkles size={24} />}
                 </button>
