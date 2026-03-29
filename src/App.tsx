@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import Sidebar from './components/Sidebar';
 import TopBar from './components/TopBar';
 import VideoGenerator from './components/VideoGenerator';
@@ -12,16 +12,10 @@ import ChatWindow from './components/ChatWindow';
 import FAQWindow from './components/FAQWindow';
 import { Language, translations } from './lib/i18n';
 import { motion, AnimatePresence } from 'motion/react';
-import { showApiKeySetup } from './lib/apiKeyHelper';
 
 export default function App() {
   const [lang, setLang] = useState<Language>('ko');
   const [activeTab, setActiveTab] = useState('generator');
-
-  useEffect(() => {
-    // API 키 설정 체크
-    showApiKeySetup();
-  }, []);
 
   const t = translations[lang].common;
 

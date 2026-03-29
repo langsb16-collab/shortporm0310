@@ -16,8 +16,8 @@ import {
   Search
 } from 'lucide-react';
 import { Language, translations } from '../lib/i18n';
-import { generateShortsScripts, generateThumbnailPrompt, generateThumbnailImage } from '../lib/gemini';
-import { validateApiKey } from '../lib/apiKeyHelper';
+import { generateThumbnailPrompt, generateThumbnailImage } from '../lib/gemini';
+import { generateScriptsViaWorker } from '../lib/workerApi';
 
 interface Script {
   title: string;
@@ -66,29 +66,19 @@ export default function VideoGenerator({ lang }: { lang: Language }) {
       return;
     }
     
-    // API 키 검증
-    if (!validateApiKey()) {
-      return;
-    }
-    
     setIsGenerating(true);
-    console.log(`🚀 Starting generation for keyword: ${keyword}, category: ${category}`);
+    console.log(`🚀 Starting generation via Worker API: keyword=${keyword}, category=${category}`);
     
     try {
-      // API 호출 (Worker 또는 직접 생성)
-      const result = await generateShortsScripts(keyword, category, lang);
-      console.log(`✅ Generated ${result.length} scripts`);
+      // Worker API 호출 (API 키는 Worker에서 안전하게 관리)
+      const result = await generateScriptsViaWorker(keyword, category, lang);
+      console.log(`✅ Generated ${result.length} scripts via Worker`);
       
       setScripts(result);
       setStep(2);
     } catch (error: any) {
       console.error("❌ Generation failed:", error);
-      
-      if (error.message.includes("API key")) {
-        alert("❌ API 키 오류\n\n.env 파일에 올바른 VITE_GEMINI_API_KEY를 설정하고 개발 서버를 재시작하세요.\n\nGoogle AI Studio: https://aistudio.google.com/app/apikey");
-      } else {
-        alert("스크립트 생성 실패. 다시 시도해주세요.\n\n오류: " + error.message);
-      }
+      alert(`스크립트 생성 실패\n\n${error.message}\n\n관리자에게 문의하세요.`);
     } finally {
       setIsGenerating(false);
     }

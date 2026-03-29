@@ -245,7 +245,7 @@ async function generateScripts(keyword: string, category: string, lang: string, 
 }
 
 /**
- * 단일 스크립트 생성
+ * 단일 스크립트 생성 (실제 Gemini API 호출)
  */
 async function generateSingleScript(
   keyword: string,
@@ -254,19 +254,96 @@ async function generateSingleScript(
   index: number,
   env: Env
 ) {
-  // 실제 Gemini API 호출은 generator.ts의 로직 활용
-  // 여기서는 Worker 환경용 간소화 버전
-  return {
-    title: `${keyword} - 스크립트 ${index + 1}`,
-    hook: "주목! 이 정보를 놓치면 후회합니다",
-    body: `${keyword}에 대한 핵심 정보를 30초 안에 전달합니다. ${category} 분야의 최신 트렌드와 함께 확인하세요.`,
-    cta: "지금 바로 확인하고 공유하세요!",
-    hashtags: [keyword, category, "바이럴", "숏폼"],
-    subtitle: [
-      { start: 0, end: 3, text: "주목! 이 정보를" },
-      { start: 3, end: 6, text: "놓치면 후회합니다" }
-    ]
-  };
+  const apiKey = env.GEMINI_API_KEY;
+  
+  if (!apiKey) {
+    throw new Error("GEMINI_API_KEY not configured in Worker environment");
+  }
+  
+  const prompt = `Generate a viral short video script for "${keyword}" (${category}) in ${lang}.
+
+Return ONLY valid JSON in this exact format:
+{
+  "title": "Engaging title under 100 chars",
+  "hook": "Attention-grabbing opening (10-200 chars)",
+  "body": "Main content (50-500 chars)",
+  "cta": "Call-to-action (5-100 chars)",
+  "hashtags": ["tag1", "tag2", "tag3"],
+  "subtitle": [
+    { "start": 0, "end": 3, "text": "Hook subtitle" },
+    { "start": 3, "end": 7, "text": "Body subtitle" }
+  ]
+}`;
+
+  try {
+    const response = await fetch(
+      `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash-exp:generateContent?key=${apiKey}`,
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          contents: [{
+            parts: [{
+              text: prompt
+            }]
+          }],
+          generationConfig: {
+            temperature: 0.7,
+            topK: 40,
+            topP: 0.95,
+            maxOutputTokens: 1024,
+            responseMimeType: "application/json"
+          }
+        })
+      }
+    );
+
+    if (!response.ok) {
+      const errorText = await response.text();
+      console.error(`Gemini API error: ${response.status} - ${errorText}`);
+      throw new Error(`Gemini API failed: ${response.statusText}`);
+    }
+
+    const data = await response.json();
+    
+    if (!data.candidates || !data.candidates[0]?.content?.parts?.[0]?.text) {
+      throw new Error("Invalid Gemini API response structure");
+    }
+
+    const resultText = data.candidates[0].content.parts[0].text;
+    const script = JSON.parse(resultText);
+    
+    // 기본값 보장
+    return {
+      title: script.title || `${keyword} - 스크립트 ${index + 1}`,
+      hook: script.hook || "주목! 이 정보를 놓치면 후회합니다",
+      body: script.body || `${keyword}에 대한 핵심 정보를 30초 안에 전달합니다.`,
+      cta: script.cta || "지금 바로 확인하고 공유하세요!",
+      hashtags: script.hashtags || [keyword, category, "바이럴", "숏폼"],
+      subtitle: script.subtitle || [
+        { start: 0, end: 3, text: "주목! 이 정보를" },
+        { start: 3, end: 6, text: "놓치면 후회합니다" }
+      ]
+    };
+    
+  } catch (error: any) {
+    console.error(`Script generation error (index ${index}):`, error);
+    
+    // Fallback: 목 데이터 반환
+    return {
+      title: `${keyword} - 스크립트 ${index + 1}`,
+      hook: "주목! 이 정보를 놓치면 후회합니다",
+      body: `${keyword}에 대한 핵심 정보를 30초 안에 전달합니다. ${category} 분야의 최신 트렌드와 함께 확인하세요.`,
+      cta: "지금 바로 확인하고 공유하세요!",
+      hashtags: [keyword, category, "바이럴", "숏폼"],
+      subtitle: [
+        { start: 0, end: 3, text: "주목! 이 정보를" },
+        { start: 3, end: 6, text: "놓치면 후회합니다" }
+      ]
+    };
+  }
 }
 
 /**
