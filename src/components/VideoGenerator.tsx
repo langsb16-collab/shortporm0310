@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { motion } from 'motion/react';
 import { 
@@ -18,6 +17,7 @@ import {
 } from 'lucide-react';
 import { Language, translations } from '../lib/i18n';
 import { generateShortsScripts, generateThumbnailPrompt, generateThumbnailImage } from '../lib/gemini';
+import { validateApiKey } from '../lib/apiKeyHelper';
 
 interface Script {
   title: string;
@@ -66,6 +66,11 @@ export default function VideoGenerator({ lang }: { lang: Language }) {
       return;
     }
     
+    // API 키 검증
+    if (!validateApiKey()) {
+      return;
+    }
+    
     setIsGenerating(true);
     console.log(`🚀 Starting generation for keyword: ${keyword}, category: ${category}`);
     
@@ -76,9 +81,14 @@ export default function VideoGenerator({ lang }: { lang: Language }) {
       
       setScripts(result);
       setStep(2);
-    } catch (error) {
+    } catch (error: any) {
       console.error("❌ Generation failed:", error);
-      alert("스크립트 생성 실패. 다시 시도해주세요.");
+      
+      if (error.message.includes("API key")) {
+        alert("❌ API 키 오류\n\n.env 파일에 올바른 VITE_GEMINI_API_KEY를 설정하고 개발 서버를 재시작하세요.\n\nGoogle AI Studio: https://aistudio.google.com/app/apikey");
+      } else {
+        alert("스크립트 생성 실패. 다시 시도해주세요.\n\n오류: " + error.message);
+      }
     } finally {
       setIsGenerating(false);
     }

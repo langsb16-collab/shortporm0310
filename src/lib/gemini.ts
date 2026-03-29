@@ -1,7 +1,13 @@
 
 import { GoogleGenAI, Type, ThinkingLevel } from "@google/genai";
 
-const apiKey = process.env.GEMINI_API_KEY || "";
+// Vite 환경 변수에서 API 키 가져오기
+const apiKey = import.meta.env.VITE_GEMINI_API_KEY || process.env.GEMINI_API_KEY || "";
+
+if (!apiKey) {
+  console.warn("⚠️ GEMINI_API_KEY not found. Please set VITE_GEMINI_API_KEY in .env file");
+}
+
 const ai = new GoogleGenAI({ apiKey });
 
 export async function generateShortsScripts(keyword: string, category: string, lang: string) {
