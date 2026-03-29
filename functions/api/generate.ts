@@ -110,8 +110,7 @@ Return ONLY valid JSON:
             temperature: 0.7,
             topK: 40,
             topP: 0.95,
-            maxOutputTokens: 1024,
-            responseMimeType: "application/json"
+            maxOutputTokens: 1024
           }
         })
       }
@@ -133,7 +132,17 @@ Return ONLY valid JSON:
     }
 
     const resultText = data.candidates[0].content.parts[0].text;
-    const script = JSON.parse(resultText);
+    console.log(`Raw Gemini response (index ${index}):`, resultText.substring(0, 200));
+    
+    // Clean and parse JSON from markdown code blocks if present
+    let jsonText = resultText.trim();
+    if (jsonText.startsWith('```json')) {
+      jsonText = jsonText.replace(/```json\n?/g, '').replace(/```\n?$/g, '').trim();
+    } else if (jsonText.startsWith('```')) {
+      jsonText = jsonText.replace(/```\n?/g, '').replace(/```\n?$/g, '').trim();
+    }
+    
+    const script = JSON.parse(jsonText);
 
     return {
       title: script.title || `${keyword} - 스크립트 ${index + 1}`,
