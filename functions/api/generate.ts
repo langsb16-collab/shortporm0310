@@ -120,7 +120,9 @@ Return ONLY valid JSON:
     if (!response.ok) {
       const errorText = await response.text();
       console.error(`Gemini API error (${response.status}):`, errorText);
-      throw new Error(`Gemini API failed: ${response.statusText}`);
+      console.error(`API Key length: ${apiKey.length}`);
+      console.error(`Request URL: https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent`);
+      throw new Error(`Gemini API failed: ${response.statusText} - ${errorText}`);
     }
 
     const data = await response.json();
@@ -144,16 +146,18 @@ Return ONLY valid JSON:
 
   } catch (error: any) {
     console.error(`Script generation error (index ${index}):`, error);
+    console.error(`Error message: ${error.message}`);
+    console.error(`Error stack: ${error.stack}`);
     
-    // Fallback
+    // Return error info instead of fallback for debugging
     return {
-      title: `${keyword} - 스크립트 ${index + 1}`,
-      hook: "주목! 이 정보를 놓치면 후회합니다",
-      body: `${keyword}에 대한 핵심 정보를 30초 안에 전달합니다.`,
-      cta: "지금 바로 확인하세요!",
-      hashtags: [keyword, category, "바이럴"],
+      title: `ERROR: ${error.message}`,
+      hook: `Index: ${index}`,
+      body: `API Key exists: ${!!apiKey}, Length: ${apiKey?.length}`,
+      cta: error.stack?.split('\n')[0] || "Unknown error",
+      hashtags: [keyword, category, "ERROR"],
       subtitle: [
-        { start: 0, end: 3, text: "주목하세요" }
+        { start: 0, end: 3, text: error.message }
       ]
     };
   }
