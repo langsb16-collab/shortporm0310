@@ -38,23 +38,40 @@
 
 ## 🏗️ 기술 아키텍처
 
+### 전체 구조 (프로덕션)
+```
+User Browser
+    ↓
+Frontend (React SPA)
+    ↓ HTTP Request (/api/*)
+Cloudflare Pages Functions
+    ↓ Secure API Call
+Google Gemini API
+    ↓
+AI Generated Scripts
+```
+
 ### Frontend
 - React 19 + TypeScript
 - Motion (Framer Motion) 애니메이션
 - TailwindCSS 4.x
 - Lucide React 아이콘
 
-### Backend
-- Cloudflare Workers (Edge Runtime)
-- Cloudflare Pages (정적 호스팅)
+### Backend (Cloudflare Pages Functions)
+- Serverless Functions (functions/api/*.ts)
+- Edge Runtime (전세계 배포)
 - Cloudflare KV (캐시 스토리지)
 - Cloudflare R2 (파일 스토리지)
 
 ### AI Engine
-- Google Gemini 3 Flash Preview
+- Google Gemini 2.0 Flash (최신 모델)
 - JSON Schema 기반 구조화 출력
-- Ajv 검증 라이브러리
 - Deterministic Generation Pipeline
+
+### 보안
+- **API 키 격리**: 프론트엔드에서 완전히 분리
+- **Cloudflare Secrets**: 안전한 환경 변수 관리
+- **Edge Security**: Cloudflare 보안 계층
 
 ## 📋 데이터 모델
 
@@ -153,27 +170,38 @@ if (qualityScore(output) < 4) {
 npm install
 ```
 
-### 2. 환경 변수 설정 (중요!)
+### 2. Gemini API 키 설정
 
-프로젝트 루트에 `.env` 파일을 생성하고 Gemini API 키를 설정하세요:
+**⚠️ 중요**: API 키는 Cloudflare Secrets로 관리됩니다. 로컬 개발 시에만 필요합니다.
 
+#### 프로덕션 (Cloudflare Pages)
 ```bash
-# .env
-VITE_GEMINI_API_KEY=your_actual_gemini_api_key_here
+# Cloudflare Pages에 Secret 추가
+npx wrangler pages secret put GEMINI_API_KEY --project-name shortporm0310
+
+# Secret 확인
+npx wrangler pages secret list --project-name shortporm0310
 ```
 
-**API 키 발급 방법:**
-1. Google AI Studio 접속: https://aistudio.google.com/app/apikey
-2. "Create API key" 클릭
-3. 생성된 키를 복사하여 `.env` 파일에 붙여넣기
+#### 로컬 개발
+프로젝트 루트에 `.dev.vars` 파일 생성:
+```bash
+# .dev.vars
+GEMINI_API_KEY=your_actual_api_key_here
+```
 
-⚠️ **주의**: 
-- `.env` 파일은 절대 Git에 커밋하지 마세요 (이미 .gitignore에 포함됨)
-- API 키는 비밀로 유지하세요
+**API 키 발급**:
+1. https://aistudio.google.com/app/apikey
+2. "Create API key" 클릭
+3. 키 복사
 
 ### 3. 개발 서버 시작
 ```bash
+# 프론트엔드만 (Pages Functions 없음)
 npm run dev
+
+# 프론트엔드 + Pages Functions (권장)
+npm run dev:all
 ```
 
 ### 4. 빌드
@@ -181,43 +209,48 @@ npm run dev
 npm run build
 ```
 
-### 5. Worker 개발
+### 5. 배포
 ```bash
-npm run worker:dev
-```
-
-### 6. 배포
-```bash
+# Pages 배포 (Functions 포함)
 npm run pages:deploy
+
+# Worker 배포 (별도 Worker 사용 시)
+npm run worker:deploy
 ```
 
 ## 📝 환경 변수
 
-### 필수 환경 변수
+### Cloudflare Pages Secrets (프로덕션)
 
 ```bash
-# .env 파일
-VITE_GEMINI_API_KEY=your_gemini_api_key
-
-# 선택 사항
-VITE_API_URL=https://api.aishorts.factory
-VITE_R2_PUBLIC_URL=https://pub-r2.aishorts.factory
-```
-
-### Cloudflare Secrets (Production)
-
-프로덕션 환경에서는 Wrangler CLI로 Secrets를 관리합니다:
-
-```bash
-# Gemini API Key 설정
+# Gemini API Key 설정 (필수)
 npx wrangler pages secret put GEMINI_API_KEY --project-name shortporm0310
-
-# OpenAI API Key 설정 (선택)
-npx wrangler pages secret put OPENAI_API_KEY --project-name shortporm0310
 
 # Secrets 목록 확인
 npx wrangler pages secret list --project-name shortporm0310
+
+# Secret 삭제 (필요 시)
+npx wrangler pages secret delete GEMINI_API_KEY --project-name shortporm0310
 ```
+
+### 로컬 개발 환경 변수
+
+#### .dev.vars (Pages Functions용)
+```bash
+# .dev.vars
+GEMINI_API_KEY=your_gemini_api_key
+```
+
+#### .env (Vite 프론트엔드용)
+```bash
+# .env
+VITE_WORKER_API_URL=/api
+```
+
+⚠️ **보안 주의사항**:
+- `.dev.vars`와 `.env`는 절대 Git에 커밋하지 마세요
+- API 키는 프론트엔드 코드에 포함하지 마세요
+- 프로덕션에서는 반드시 Cloudflare Secrets 사용
 
 ## 🛡️ 보안
 
